@@ -54,7 +54,7 @@ cd /opt/postal/install
 ./bootstrap-config.sh /opt/postal/config
 ```
 
-Once this has completed, go and open up `/opt/postal/config/postal.yml` and replace any values as you see fit.
+Once this has completed, go and open up `/opt/postal/config/postal.yml` and replace any values as you see fit. The most important thing you'll need to change is the DNS configuration. For details on how to configure this, see the [DNS documentation](https://github.com/postalhq/install/blob/main/DNS.md).
 
 ### Docker Compose
 
@@ -119,3 +119,13 @@ The configuration directory that you created earlier should be mounted into the 
 ### Proxying web traffic
 
 It is recommended to proxy web traffic on the host to your actual web server. This should handle SSL termination. We recommend using something like [Caddy](https://caddyserver.com) for this. When you enable this, you can update the bind address for the Postal web server in the `postal.yml` configuration file.
+
+### Putting SMTP server on port 25
+
+The default configuration runs the SMTP server on port 2525. If you wish to receive incoming email to your host, you will need to also listen on port 25. One of the easier ways to achieve this is to use an iptables NAT redirect rule.
+
+```
+sudo iptables -t nat -A PREROUTING -p tcp --dport 25 -j REDIRECT --to-port 2525
+```
+
+You will need to ensure that this persists on boot. The technique for doing this will vary based on operating system.
