@@ -89,11 +89,19 @@ docker-compose up -d
 
 ### Upgrading
 
-If there is a new release of Docker, you can upgrade to the latest version by simply running the following:
+If there is a new release of Postal, you can upgrade to the latest version by simply running the following:
 
 ```
 docker-compose pull
 docker-compose up -d
+```
+
+### Scaling up
+
+If you need to add additional capacity to your installation, the main component you can use to scale horizontally is the worker process. If you do this, you will need to make sure you don't create a bottleneck at your database - that may also need scaling up appropriately.
+
+```
+docker-compose up -d --scale worker=4
 ```
 
 ### Logging
