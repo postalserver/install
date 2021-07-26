@@ -1,6 +1,4 @@
-**This is a work in progress. It is very much not complete, the final approach or not even necesserily a good idea yet!**
-
-# Postal
+# Installing Postal
 
 This repository contains everything you need to start using Postal straight away on your own servers. Follow these instructions to get started quickly. The purpose of this guide is to get you up and running as quickly as possible. We *strongly* recommend you use secure passwords wherever they're used.
 
@@ -58,11 +56,11 @@ cd /opt/postal/install
 
 Once this has completed, go and open up `/opt/postal/config/postal.yml` and replace any values as you see fit.
 
-### Processes
+### Docker Compose
 
 Postal has a few processes that need to run in order to function. Each of these processes can (and should) be run within containers. To make getting started as easy as possible, this repository contains a `docker-compose.sh` file which does the heavy lifting. However, if you want full control, you can use this as a template for running you own processes using whatever technology you fancy.
 
-#### Initializing the database
+### Initializing the database
 
 Before you can do anything, you need to initialize the database schema and create your initial user. You can do this using the commands below.
 
@@ -72,7 +70,7 @@ docker-compose run init_db
 docker-compose run make_user
 ```
 
-#### Running processes
+### Running processes
 
 There are a few processes that need to be running.
 
@@ -88,3 +86,28 @@ The Docker Compose file includes configuration for all of these. For simplicity,
 cd /opt/postal/install
 docker-compose up -d
 ```
+
+### Upgrading
+
+If there is a new release of Docker, you can upgrade to the latest version by simply running the following:
+
+```
+docker-compose pull
+docker-compose up -d
+```
+
+### Logging
+
+All logs are written to STDOUT and STDERR for the running containers.
+
+### Updating configuration
+
+The configuration directory that you created earlier should be mounted into the containers at `/config`. There are a few things to note:
+
+* If you need to reference another config file from `postal.yml`, you should remember that you will need to use paths like `/config/file.pem` rather than the path on the host system.
+
+* You will need to restart Postal for most changes.
+
+### Proxying web traffic
+
+It is recommended to proxy web traffic on the host to your actual web server. This should handle SSL termination. We recommend using something like [Caddy](https://caddyserver.com) for this. When you enable this, you can update the bind address for the Postal web server in the `postal.yml` configuration file.

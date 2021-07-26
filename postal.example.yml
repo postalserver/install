@@ -1,3 +1,7 @@
+general:
+  # This can be changed to allow messages to be sent from multiple IP addresses
+  use_ip_pools: false
+
 web:
   # The host that the management interface will be available on
   host: postal.example.com
@@ -13,9 +17,9 @@ smtp_server:
   # Specify configuration to the Postal SMTP server
   port: 2525
 
-general:
-  # This can be changed to allow messages to be sent from multiple IP addresses
-  use_ip_pools: false
+logging:
+  # Specify options for the logging
+  stdout: true
 
 main_db:
   # Specify the connection details for your MySQL database
@@ -37,7 +41,7 @@ rabbitmq:
   host: 127.0.0.1
   username: postal
   password: postal
-  vhost: /postal
+  vhost: postal
 
 dns:
   # Specify the DNS records that you have configured. Refer to the documentation at
