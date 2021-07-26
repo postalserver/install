@@ -1,8 +1,4 @@
-# This is an example docker compose file for running a full Postal installation.
-# Due to its nature, it doesn't attempt too much security (for example, communication
-# between services is not secured at all).
 version: "3.9"
-
 services:
   web:
     image: postalhq/postal:latest
