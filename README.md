@@ -54,7 +54,7 @@ cd /opt/postal/install
 ./bootstrap-config.sh /opt/postal/config
 ```
 
-Once this has completed, go and open up `/opt/postal/config/postal.yml` and replace any values as you see fit. The most important thing you'll need to change is the DNS configuration. For details on how to configure this, see the [DNS documentation](https://github.com/postalhq/install/blob/main/DNS.md).
+Once this has completed, go and open up `/opt/postal/config/postal.yml` and replace any values as you see fit. The most important thing you'll need to change is the DNS configuration. For details on how to configure this, see the [DNS documentation](https://github.com/postalhq/postal/wiki/Domains-&-DNS-Configuration).
 
 ### Docker Compose
 
