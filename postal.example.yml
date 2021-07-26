@@ -1,0 +1,68 @@
+web:
+  # The host that the management interface will be available on
+  host: postal.example.com
+  # The protocol that requests to the management interface should happen on
+  protocol: https
+
+web_server:
+  # Specify configuration for the Postal web server
+  bind_address: 0.0.0.0
+  port: 5000
+
+smtp_server:
+  # Specify configuration to the Postal SMTP server
+  port: 2525
+
+general:
+  # This can be changed to allow messages to be sent from multiple IP addresses
+  use_ip_pools: false
+
+main_db:
+  # Specify the connection details for your MySQL database
+  host: 127.0.0.1
+  username: root
+  password: postal
+  database: postal
+
+message_db:
+  # Specify the connection details for your MySQL server that will be house the
+  # message databases for mail servers.
+  host: 127.0.0.1
+  username: root
+  password: postal
+  prefix: postal
+
+rabbitmq:
+  # Specify connection details for your RabbitMQ server
+  host: 127.0.0.1
+  username: postal
+  password: postal
+  vhost: /postal
+
+dns:
+  # Specify the DNS records that you have configured. Refer to the documentation at
+  # https://github.com/atech/postal/wiki/Domains-&-DNS-Configuration for further
+  # information about these.
+  mx_records:
+    - mx.postal.example.com
+  smtp_server_hostname: postal.example.com
+  spf_include: spf.postal.example.com
+  return_path: rp.postal.example.com
+  route_domain: routes.postal.example.com
+  track_domain: track.postal.example.com
+
+smtp:
+  # Specify an SMTP server that can be used to send messages from the Postal management
+  # system to users. You can configure this to use a Postal mail server once the
+  # your installation has been set up.
+  host: 127.0.0.1
+  port: 2525
+  username: # Complete when Postal is running and you can
+  password: # generate the credentials within the interface.
+  from_name: Postal
+  from_address: postal@yourdomain.com
+
+rails:
+  # This is generated automatically by the config initialization. It should be a random
+  # string unique to your installation.
+  secret_key: {{secretkey}}

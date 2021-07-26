@@ -4,59 +4,62 @@
 version: "3.9"
 
 services:
-  # MariaDB used for persisting all data
-  mariadb:
-    profiles: ["db", "postal", "tools"]
-    image: mariadb
-    restart: always
-    volumes:
-      - ./data/mariadb:/var/lib/mysql
-    environment:
-      MARIADB_DATABASE: postal
-      MARIADB_USER: postal
-      MARIADB_PASSWORD: postal
-      MARIADB_ROOT_PASSWORD: postal
-
-  # Runs the Postal web server
-  postal_web:
-    profiles: ["postal"]
+  web:
     image: postalhq/postal:latest
     command: bundle exec puma -C config/puma.rb
+    network_mode: host
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
       - ./config:/config
-    ports:
-      - 5000:5000
-    depends_on:
-      - mariadb
 
-  # Bootstraps all application configuration by generating an example config file
-  # as well as generating new keys and self-signed certificates for other
-  # components. These can be kept or replaced as necessary.
-  bootstrap_config:
-    profiles: ["tools"]
+  smtp:
     image: postalhq/postal:latest
-    command: bundle exec ruby script/generate_initial_config.rb
+    command: bundle exec rake postal:smtp_server
+    network_mode: host
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
       - ./config:/config
-    depends_on:
-      - mariadb
+
+  worker:
+    image: postalhq/postal:latest
+    command: bundle exec ruby script/worker.rb
+    network_mode: host
+    environment:
+      POSTAL_CONFIG_ROOT: /config
+    volumes:
+      - ./config:/config
+
+  cron:
+    image: postalhq/postal:latest
+    command: bundle exec rake postal:cron
+    network_mode: host
+    environment:
+      POSTAL_CONFIG_ROOT: /config
+    volumes:
+      - ./config:/config
+
+  requeuer:
+    image: postalhq/postal:latest
+    command: bundle exec rake postal:requeuer
+    network_mode: host
+    environment:
+      POSTAL_CONFIG_ROOT: /config
+    volumes:
+      - ./config:/config
 
   # Initialize the database by loading the schema and adding any seed data that is
   # needed to run the application for the first run.
-  init:
+  init_db:
     profiles: ["tools"]
     image: postalhq/postal:latest
     command: bundle exec rake db:schema:load db:seed
+    network_mode: host
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
       - ./config:/config
-    depends_on:
-      - mariadb
 
   # Creates a new super admin user by prompting for the details in the terminal and then
   # creating the user as appropriate in the database.
@@ -64,9 +67,8 @@ services:
     profiles: ["tools"]
     image: postalhq/postal:latest
     command: bundle exec ruby script/make_user.rb
+    network_mode: host
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
       - ./config:/config
-    depends_on:
-      - mariadb
