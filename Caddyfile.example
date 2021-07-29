@@ -1,0 +1,14 @@
+# Update this to match the hostname you wish to use for accessing the
+# Postal web interface.
+postal.yourdomain.com {
+  reverse_proxy 127.0.0.1:5000
+}
+
+# If you use open/click tracking you may need to add additional hosts
+# to this file using the format below.
+#
+# click.yourdomain.com {
+#   reverse_proxy 127.0.0.1:5000 {
+#     header_up X-Postal-Track-Host "1"
+#   }
+# }
