@@ -109,6 +109,7 @@ case "$1" in
         if [ ! -f $output_path/signing.key ]; then
             echo '=> Creating signing private key'
             openssl genrsa -out $output_path/signing.key 1024
+            chmod 644 $output_path/signing.key
         fi
 
         ;;
