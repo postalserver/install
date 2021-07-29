@@ -26,6 +26,7 @@ case "$1" in
         ;;
 
     upgrade)
+        run "git pull origin main"
         run "docker-compose pull"
         run "docker-compose -p postal run runner postal upgrade"
         run "docker-compose -p postal up -d"
