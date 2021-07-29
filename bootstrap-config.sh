@@ -21,22 +21,7 @@ if [ ! -f $output_path/postal.yml ]; then
   sed -i "s/{{secretkey}}/$rails_secret_key/" $output_path/postal.yml
 fi
 
-if [ ! -f $output_path/lets_encrypt.pem ]; then
-  echo '=> Creating lets encrypt private key'
-  openssl genrsa -out $output_path/lets_encrypt.pem 2048
-fi
-
 if [ ! -f $output_path/signing.key ]; then
   echo '=> Creating signing private key'
   openssl genrsa -out $output_path/signing.key 1024
-fi
-
-if [ ! -f $output_path/fast_server.cert ]; then
-  echo '=> Creating fast server default private key'
-  openssl req -x509 -nodes \
-    -newkey rsa:2048 \
-    -keyout $output_path/fast_server.key \
-    -out $output_path/fast_server.cert \
-    -days 3650 \
-    -subj '/CN=default'
 fi
