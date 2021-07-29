@@ -7,7 +7,7 @@ services:
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
-      - ./config:/config
+      - /opt/postal/config:/config
 
   smtp:
     image: postalhq/postal:latest
@@ -16,7 +16,7 @@ services:
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
-      - ./config:/config
+      - /opt/postal/config:/config
 
   worker:
     image: postalhq/postal:latest
@@ -25,7 +25,7 @@ services:
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
-      - ./config:/config
+      - /opt/postal/config:/config
 
   cron:
     image: postalhq/postal:latest
@@ -34,7 +34,7 @@ services:
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
-      - ./config:/config
+      - /opt/postal/config:/config
 
   requeuer:
     image: postalhq/postal:latest
@@ -43,7 +43,7 @@ services:
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
-      - ./config:/config
+      - /opt/postal/config:/config
 
   # Initialize the database by loading the schema and adding any seed data that is
   # needed to run the application for the first run.
@@ -55,7 +55,7 @@ services:
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
-      - ./config:/config
+      - /opt/postal/config:/config
 
   # Creates a new super admin user by prompting for the details in the terminal and then
   # creating the user as appropriate in the database.
@@ -67,4 +67,4 @@ services:
     environment:
       POSTAL_CONFIG_ROOT: /config
     volumes:
-      - ./config:/config
+      - /opt/postal/config:/config
