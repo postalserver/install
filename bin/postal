@@ -30,6 +30,19 @@ case "$1" in
         run "docker-compose -p postal logs $2"
         ;;
 
+    dc)
+        run "docker-compose -p postal $2"
+        ;;
+
+    bash)
+        if [ "$2" == "" ]; then
+            echo 'must provide service name'
+            exit 1
+        fi
+
+        run "docker-compose -p postal exec $2 bash"
+        ;;
+
     initialize)
         run "docker-compose pull"
         run "docker-compose -p postal run runner postal initialize"
@@ -106,6 +119,8 @@ case "$1" in
         echo
         echo -e " * \e[35mstart\e[0m - start Postal"
         echo -e " * \e[35mstop\e[0m - stop Postal"
+        echo -e " * \e[35mstatus\e[0m - view current process status"
+        echo -e " * \e[35mlogs [service]\e[0m - view logs from services"
         echo
         echo "Setup/upgrade tools:"
         echo
@@ -120,5 +135,6 @@ case "$1" in
         echo -e " * \e[34mconsole\e[0m - open an interactive console"
         echo -e " * \e[34mtest-app-smtp\e[0m - send a test message through Postal"
         echo -e " * \e[34mbootstrap hostname [path]\e[0m - create a new set of config"
+        echo -e " * \e[34mbash [service]\e[0m - access a bash console for a running process"
         echo
 esac
