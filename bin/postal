@@ -7,7 +7,6 @@ run() {
 }
 
 # Enter the root directory
-echo $ROOT_DIR
 cd $ROOT_DIR
 
 # Run the right command
