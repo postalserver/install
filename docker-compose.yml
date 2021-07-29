@@ -2,60 +2,48 @@ version: "3.9"
 services:
   web:
     image: ghcr.io/postalserver/postal:latest
-    command: bundle exec puma -C config/puma.rb
+    command: postal web-server
     network_mode: host
-    environment:
-      POSTAL_CONFIG_ROOT: /config
     volumes:
       - /opt/postal/config:/config
 
   smtp:
     image: ghcr.io/postalserver/postal:latest
-    command: bundle exec rake postal:smtp_server
+    command: postal smtp-server
     network_mode: host
     cap_add:
       - NET_BIND_SERVICE
-    environment:
-      POSTAL_CONFIG_ROOT: /config
     volumes:
       - /opt/postal/config:/config
 
   worker:
     image: ghcr.io/postalserver/postal:latest
-    command: bundle exec ruby script/worker.rb
+    command: postal worker
     network_mode: host
-    environment:
-      POSTAL_CONFIG_ROOT: /config
     volumes:
       - /opt/postal/config:/config
 
   cron:
     image: ghcr.io/postalserver/postal:latest
-    command: bundle exec rake postal:cron
+    command: postal cron
     network_mode: host
-    environment:
-      POSTAL_CONFIG_ROOT: /config
     volumes:
       - /opt/postal/config:/config
 
   requeuer:
     image: ghcr.io/postalserver/postal:latest
-    command: bundle exec rake postal:requeuer
+    command: postal requeuer
     network_mode: host
-    environment:
-      POSTAL_CONFIG_ROOT: /config
     volumes:
       - /opt/postal/config:/config
 
   # Initialize the database by loading the schema and adding any seed data that is
   # needed to run the application for the first run.
-  init_db:
+  initialize:
     profiles: ["tools"]
     image: ghcr.io/postalserver/postal:latest
-    command: bundle exec rake db:schema:load db:seed
+    command: postal initialize
     network_mode: host
-    environment:
-      POSTAL_CONFIG_ROOT: /config
     volumes:
       - /opt/postal/config:/config
 
@@ -64,9 +52,16 @@ services:
   make_user:
     profiles: ["tools"]
     image: ghcr.io/postalserver/postal:latest
-    command: bundle exec ruby script/make_user.rb
+    command: postal make-user
     network_mode: host
-    environment:
-      POSTAL_CONFIG_ROOT: /config
+    volumes:
+      - /opt/postal/config:/config
+
+  # Upgrades the databases
+  upgrade:
+    profiles: ["tools"]
+    image: ghcr.io/postalserver/postal:latest
+    command: postal upgrade
+    network_mode: host
     volumes:
       - /opt/postal/config:/config
