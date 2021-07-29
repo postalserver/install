@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   web:
-    image: postalhq/postal:latest
+    image: ghcr.io/postalserver/postal:latest
     command: bundle exec puma -C config/puma.rb
     network_mode: host
     environment:
@@ -10,7 +10,7 @@ services:
       - /opt/postal/config:/config
 
   smtp:
-    image: postalhq/postal:latest
+    image: ghcr.io/postalserver/postal:latest
     command: bundle exec rake postal:smtp_server
     network_mode: host
     cap_add:
@@ -21,7 +21,7 @@ services:
       - /opt/postal/config:/config
 
   worker:
-    image: postalhq/postal:latest
+    image: ghcr.io/postalserver/postal:latest
     command: bundle exec ruby script/worker.rb
     network_mode: host
     environment:
@@ -30,7 +30,7 @@ services:
       - /opt/postal/config:/config
 
   cron:
-    image: postalhq/postal:latest
+    image: ghcr.io/postalserver/postal:latest
     command: bundle exec rake postal:cron
     network_mode: host
     environment:
@@ -39,7 +39,7 @@ services:
       - /opt/postal/config:/config
 
   requeuer:
-    image: postalhq/postal:latest
+    image: ghcr.io/postalserver/postal:latest
     command: bundle exec rake postal:requeuer
     network_mode: host
     environment:
@@ -51,7 +51,7 @@ services:
   # needed to run the application for the first run.
   init_db:
     profiles: ["tools"]
-    image: postalhq/postal:latest
+    image: ghcr.io/postalserver/postal:latest
     command: bundle exec rake db:schema:load db:seed
     network_mode: host
     environment:
@@ -63,7 +63,7 @@ services:
   # creating the user as appropriate in the database.
   make_user:
     profiles: ["tools"]
-    image: postalhq/postal:latest
+    image: ghcr.io/postalserver/postal:latest
     command: bundle exec ruby script/make_user.rb
     network_mode: host
     environment:
