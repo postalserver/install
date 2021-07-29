@@ -37,49 +37,11 @@ services:
     volumes:
       - /opt/postal/config:/config
 
-  # Initialize the database by loading the schema and adding any seed data that is
-  # needed to run the application for the first run.
-  initialize:
+  runner:
     profiles: ["tools"]
     image: ghcr.io/postalserver/postal:latest
-    command: postal initialize
+    command: postal
     network_mode: host
     volumes:
       - /opt/postal/config:/config
 
-  # Creates a new super admin user by prompting for the details in the terminal and then
-  # creating the user as appropriate in the database.
-  make_user:
-    profiles: ["tools"]
-    image: ghcr.io/postalserver/postal:latest
-    command: postal make-user
-    network_mode: host
-    volumes:
-      - /opt/postal/config:/config
-
-  # Upgrades the databases
-  upgrade:
-    profiles: ["tools"]
-    image: ghcr.io/postalserver/postal:latest
-    command: postal upgrade
-    network_mode: host
-    volumes:
-      - /opt/postal/config:/config
-
-  # Runs a console
-  console:
-    profiles: ["tools"]
-    image: ghcr.io/postalserver/postal:latest
-    command: postal console
-    network_mode: host
-    volumes:
-      - /opt/postal/config:/config
-
-  # Runs a console
-  default_dkim_record:
-    profiles: ["tools"]
-    image: ghcr.io/postalserver/postal:latest
-    command: postal default_dkim_record
-    network_mode: host
-    volumes:
-      - /opt/postal/config:/config
