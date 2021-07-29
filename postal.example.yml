@@ -10,12 +10,12 @@ web:
 
 web_server:
   # Specify configuration for the Postal web server
-  bind_address: 0.0.0.0
+  bind_address: 127.0.0.1
   port: 5000
 
 smtp_server:
   # Specify configuration to the Postal SMTP server
-  port: 2525
+  port: 25
 
 logging:
   # Specify options for the logging
