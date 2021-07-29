@@ -65,3 +65,21 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+
+  # Runs a console
+  console:
+    profiles: ["tools"]
+    image: ghcr.io/postalserver/postal:latest
+    command: postal console
+    network_mode: host
+    volumes:
+      - /opt/postal/config:/config
+
+  # Runs a console
+  default_dkim_record:
+    profiles: ["tools"]
+    image: ghcr.io/postalserver/postal:latest
+    command: postal default_dkim_record
+    network_mode: host
+    volumes:
+      - /opt/postal/config:/config
