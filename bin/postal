@@ -21,6 +21,7 @@ case "$1" in
         ;;
 
     initialize)
+        run "docker-compose pull"
         run "docker-compose -p postal run runner postal initialize"
         ;;
 
