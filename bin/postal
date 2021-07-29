@@ -50,21 +50,18 @@ case "$1" in
         run "docker-compose -p postal run runner postal test-app-smtp"
         ;;
 
-    bootstrap-config)
-        output_path=$2
-        hostname=$3
+    bootstrap)
+        hostname=$2
+        output_path=$3
 
         if [ "$output_path" == "" ]; then
-            echo 'output path is missing.'
-            echo
-            echo 'usage: ./bin/postal path/to/config postal.mydomain.com'
-            exit 1
+            output_path=/opt/postal/config
         fi
 
         if [ "$hostname" == "" ]; then
             echo 'hostname is missing.'
             echo
-            echo 'usage: ./bin/postal path/to/config postal.mydomain.com'
+            echo 'usage: ./bin/postal postal.mydomain.com [path/to/config]'
             exit 1
         fi
 
@@ -110,6 +107,6 @@ case "$1" in
         echo -e " * \e[34mdefault-dkim-record\e[0m - display the default DKIM record"
         echo -e " * \e[34mconsole\e[0m - open an interactive console"
         echo -e " * \e[34mtest-app-smtp\e[0m - send a test message through Postal"
-        echo -e " * \e[34mbootstrap-config [path] [hostname]\e[0m - create a new set of config"
+        echo -e " * \e[34mbootstrap hostname [path]\e[0m - create a new set of config"
         echo
 esac
