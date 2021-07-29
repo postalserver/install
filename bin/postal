@@ -15,7 +15,7 @@ cd $ROOT_DIR
 # Run the right command
 case "$1" in
     start)
-        run "docker-compose -p postal up -d $2"
+        run "docker-compose -p postal up -d ${@:2}"
         ;;
 
     stop)
@@ -27,11 +27,11 @@ case "$1" in
         ;;
 
     logs)
-        run "docker-compose -p postal logs $2"
+        run "docker-compose -p postal logs ${@:2}"
         ;;
 
     dc)
-        run "docker-compose -p postal $2"
+        run "docker-compose -p postal ${@:2}"
         ;;
 
     bash)
