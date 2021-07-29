@@ -4,7 +4,7 @@ general:
 
 web:
   # The host that the management interface will be available on
-  host: postal.example.com
+  host: postal.yourdomain.com
   # The protocol that requests to the management interface should happen on
   protocol: https
 

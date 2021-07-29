@@ -7,6 +7,7 @@ run() {
 }
 
 # Enter the root directory
+echo $ROOT_DIR
 cd $ROOT_DIR
 
 # Run the right command
@@ -49,6 +50,46 @@ case "$1" in
         run "docker-compose -p postal run runner postal test-app-smtp"
         ;;
 
+    bootstrap-config)
+        output_path=$2
+        hostname=$3
+
+        if [ "$output_path" == "" ]; then
+            echo 'output path is missing.'
+            echo
+            echo 'usage: ./bin/postal path/to/config postal.mydomain.com'
+            exit 1
+        fi
+
+        if [ "$hostname" == "" ]; then
+            echo 'hostname is missing.'
+            echo
+            echo 'usage: ./bin/postal path/to/config postal.mydomain.com'
+            exit 1
+        fi
+
+        mkdir -p $output_path
+
+        if [ ! -f $output_path/postal.yml ]; then
+            echo "=> Creating $output_path/postal.yml"
+            cp examples/postal.yml $output_path/postal.yml
+            rails_secret_key=`openssl rand -hex 128 | tr -d '\n'`
+            sed -i "s/{{secretkey}}/$rails_secret_key/" $output_path/postal.yml
+            sed -i "s/postal.yourdomain.com/$hostname/" $output_path/postal.yml
+        fi
+
+        if [ ! -f $output_path/Caddyfile ]; then
+            echo "=> Creating $output_path/Caddyfile"
+            cp examples/Caddyfile $output_path/Caddyfile
+            sed -i "s/postal.yourdomain.com/$hostname/" $output_path/Caddyfile
+        fi
+
+        if [ ! -f $output_path/signing.key ]; then
+            echo '=> Creating signing private key'
+            openssl genrsa -out $output_path/signing.key 1024
+        fi
+
+        ;;
     *)
         echo "Usage: postal [command]"
         echo
@@ -69,5 +110,6 @@ case "$1" in
         echo -e " * \e[34mdefault-dkim-record\e[0m - display the default DKIM record"
         echo -e " * \e[34mconsole\e[0m - open an interactive console"
         echo -e " * \e[34mtest-app-smtp\e[0m - send a test message through Postal"
+        echo -e " * \e[34mbootstrap-config [path] [hostname]\e[0m - create a new set of config"
         echo
 esac
