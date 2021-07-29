@@ -1,6 +1,9 @@
 #!/bin/bash
-ROOT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )
+
 set -e
+
+ORIGINAL_SCRIPT="$( realpath "${BASH_SOURCE[0]}" )"
+ROOT_DIR=$( cd "$( dirname "${ORIGINAL_SCRIPT}" )/.." && pwd )
 
 run() {
     eval $@
@@ -17,6 +20,14 @@ case "$1" in
 
     stop)
         run "docker-compose -p postal down"
+        ;;
+
+    status)
+        run "docker-compose -p postal ps"
+        ;;
+
+    logs)
+        run "docker-compose -p postal logs $2"
         ;;
 
     initialize)
