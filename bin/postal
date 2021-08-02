@@ -9,29 +9,97 @@ run() {
     eval $@
 }
 
+run-docker-compose() {
+    if [ ! -f "docker-compose.yml" ]; then
+        echo 'No docker-compose file available. Generating using latest available version...'
+        latest_version=`get-latest-postal-version`
+        echo "Latest verison is $latest_version"
+        set-postal-version $latest_version
+    fi
+
+    eval "docker-compose -p postal $@"
+}
+
+set-postal-version() {
+    desired_version=$1;
+
+    # Create a backup of the previous docker-compose file
+    if [ -f docker-compose.yml ]; then
+        cp docker-compose.yml docker-compose.backup.yml
+    fi
+
+    # Copy the new one
+    cp templates/docker-compose.yml docker-compose.yml
+
+    # Replace the version string
+    sed -i "s/{{version}}/$desired_version/" docker-compose.yml
+}
+
+get-latest-postal-version() {
+    if ! command -v curl &> /dev/null
+    then
+        echo "curl could not be found. Install curl before continuing." > /dev/stderr
+        return 1
+    fi
+
+    if ! command -v jq &> /dev/null
+    then
+        echo "jq could not be found. Install jq before continuing." > /dev/stderr
+        return 1
+    fi
+
+    local response=`curl -s https://api.github.com/repos/postalserver/postal/releases/latest`
+
+    local error=`echo $response | jq -r '.message'`
+    if [[ "$error" == *"rate limit exceeded"* ]]; then
+        echo "GitHub API rate limit exceeded. Try again later." > /dev/stderr
+        return 1
+    fi
+
+    local latest_version=`echo $response | jq -r '.tag_name'`
+    if [ "$latest_version" == "" ] || [ "$latest_version" == "null" ]; then
+        echo "Could not get latest version of Postal from GitHub. Make sure you" > /dev/stderr
+        echo "are connected to the internet and GitHub is available." > /dev/stderr
+        return 1
+    fi
+
+    echo $latest_version
+}
+
 # Enter the root directory
 cd $ROOT_DIR
 
 # Run the right command
 case "$1" in
+    set-version)
+        if [ "$2" == "" ]; then
+            echo 'version is missing.'
+            echo
+            echo 'usage: postal set-version [x.x.x]'
+            exit 1
+        fi
+
+        set-postal-version "$2"
+        ;;
+
     start)
-        run "docker-compose -p postal up -d ${@:2}"
+        run-docker-compose "up -d ${@:2}"
         ;;
 
     stop)
-        run "docker-compose -p postal down"
+        run-docker-compose "down"
         ;;
 
     status)
-        run "docker-compose -p postal ps"
+        run-docker-compose "ps"
         ;;
 
     logs)
-        run "docker-compose -p postal logs ${@:2}"
+        run-docker-compose "logs ${@:2}"
         ;;
 
     dc)
-        run "docker-compose -p postal ${@:2}"
+        run-docker-compose "${@:2}"
         ;;
 
     bash)
@@ -40,39 +108,52 @@ case "$1" in
             exit 1
         fi
 
-        run "docker-compose -p postal exec $2 bash"
+        run-docker-compose "exec $2 bash"
         ;;
 
     initialize)
-        run "docker-compose pull"
-        run "docker-compose -p postal run runner postal initialize"
+        run-docker-compose "pull"
+        run-docker-compose "run runner postal initialize"
         ;;
 
     upgrade)
         run "git pull origin main"
-        run "docker-compose pull"
-        run "docker-compose -p postal run runner postal upgrade"
-        run "docker-compose -p postal up -d"
+
+        # Get the latest verison of Postal which we want to upgrade
+        # to if no other version is provided.
+        if [ "$2" == "" ]; then
+            echo 'No version specified, using latest available version...'
+            latest_version=`get-latest-postal-version`
+            set-postal-version $latest_version
+        else
+            latest_version="$2"
+        fi
+
+        echo "Upgrading to $latest_version"
+
+        run-docker-compose "pull"
+        run-docker-compose "run runner postal upgrade"
+        run-docker-compose "up -d"
         ;;
 
     upgrade-db)
-        run "docker-compose -p postal run runner postal upgrade"
+        run-docker-compose "run runner postal upgrade"
         ;;
 
     console)
-        run "docker-compose -p postal run runner postal console"
+        run-docker-compose "run runner postal console"
         ;;
 
     make-user)
-        run "docker-compose -p postal run runner postal make-user"
+        run-docker-compose "run runner postal make-user"
         ;;
 
     default-dkim-record)
-        run "docker-compose -p postal run runner postal default-dkim-record"
+        run-docker-compose "run runner postal default-dkim-record"
         ;;
 
     test-app-smtp)
-        run "docker-compose -p postal run runner postal test-app-smtp"
+        run-docker-compose "run runner postal test-app-smtp"
         ;;
 
     bootstrap)
@@ -89,6 +170,12 @@ case "$1" in
             echo 'usage: ./bin/postal postal.mydomain.com [path/to/config]'
             exit 1
         fi
+
+        # Get the latest verison of Postal as the starting version for a
+        # new installation.
+        latest_version=`get-latest-postal-version`
+        echo "Latest version is: $latest_version"
+        set-postal-version $latest_version
 
         mkdir -p $output_path
 
