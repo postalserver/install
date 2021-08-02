@@ -1,2 +1,2 @@
 config/**/*
-docker-compose.*
+/docker-compose.*
