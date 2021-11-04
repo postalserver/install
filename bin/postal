@@ -94,6 +94,10 @@ case "$1" in
         run-docker-compose "ps"
         ;;
 
+    restart)
+        run-docker-compose "restart"
+        ;;
+
     logs)
         run-docker-compose "logs ${@:2}"
         ;;
