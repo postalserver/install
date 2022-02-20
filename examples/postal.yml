@@ -29,7 +29,7 @@ main_db:
   database: postal
 
 message_db:
-  # Specify the connection details for your MySQL server that will be house the
+  # Specify the connection details for your MySQL server that will house the
   # message databases for mail servers.
   host: 127.0.0.1
   username: root
