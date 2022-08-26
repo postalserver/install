@@ -113,7 +113,7 @@ case "$1" in
 
     initialize)
         run-docker-compose "pull"
-        run-docker-compose "run runner postal initialize"
+        run-docker-compose "run --rm runner postal initialize"
         ;;
 
     upgrade)
@@ -132,28 +132,28 @@ case "$1" in
         echo "Upgrading to $latest_version"
 
         run-docker-compose "pull"
-        run-docker-compose "run runner postal upgrade"
+        run-docker-compose "run --rm runner postal upgrade"
         run-docker-compose "up -d"
         ;;
 
     upgrade-db)
-        run-docker-compose "run runner postal upgrade"
+        run-docker-compose "run --rm runner postal upgrade"
         ;;
 
     console)
-        run-docker-compose "run runner postal console"
+        run-docker-compose "run --rm runner postal console"
         ;;
 
     make-user)
-        run-docker-compose "run runner postal make-user"
+        run-docker-compose "run --rm runner postal make-user"
         ;;
 
     default-dkim-record)
-        run-docker-compose "run runner postal default-dkim-record"
+        run-docker-compose "run --rm runner postal default-dkim-record"
         ;;
 
     test-app-smtp)
-        run-docker-compose "run runner postal test-app-smtp"
+        run-docker-compose "run --rm runner postal test-app-smtp"
         ;;
 
     bootstrap)
