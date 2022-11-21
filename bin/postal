@@ -32,7 +32,7 @@ set-postal-version() {
     cp templates/docker-compose.yml docker-compose.yml
 
     # Replace the version string
-    sed -i "s/{{version}}/$desired_version/" docker-compose.yml
+    sed -i '' "s/{{version}}/$desired_version/g" docker-compose.yml
 }
 
 get-latest-postal-version() {
@@ -183,14 +183,14 @@ case "$1" in
             echo "=> Creating $output_path/postal.yml"
             cp examples/postal.yml $output_path/postal.yml
             rails_secret_key=`openssl rand -hex 128 | tr -d '\n'`
-            sed -i "s/{{secretkey}}/$rails_secret_key/" $output_path/postal.yml
-            sed -i "s/postal.yourdomain.com/$hostname/" $output_path/postal.yml
+            sed -i '' "s/{{secretkey}}/$rails_secret_key/g" $output_path/postal.yml
+            sed -i '' "s/postal.yourdomain.com/$hostname/g" $output_path/postal.yml
         fi
 
         if [ ! -f $output_path/Caddyfile ]; then
             echo "=> Creating $output_path/Caddyfile"
             cp examples/Caddyfile $output_path/Caddyfile
-            sed -i "s/postal.yourdomain.com/$hostname/" $output_path/Caddyfile
+            sed -i '' "s/postal.yourdomain.com/$hostname/g" $output_path/Caddyfile
         fi
 
         if [ ! -f $output_path/signing.key ]; then
