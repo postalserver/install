@@ -16,8 +16,20 @@ run-docker-compose() {
         echo "Latest verison is $latest_version"
         set-postal-version $latest_version
     fi
-
-    eval "docker-compose -p postal $@"
+    
+    if command -v docker-compose &> /dev/null
+    then
+        echo "Legacy docker-compose found"
+        compose_cmd=docker-compose
+    elif docker compose &> /dev/null
+    then
+        echo "Docker compose plugin found"
+        compose_cmd="docker compose"
+    else
+        echo "No version of docker compose found. Install docker compose plugin before continuing"
+        exit
+    fi
+    eval "$compose_cmd -p postal $@"
 }
 
 set-postal-version() {
