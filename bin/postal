@@ -27,6 +27,8 @@ run-docker-compose() {
         compose_cmd="docker compose"
     else
         echo "No version of docker compose found. Install docker compose plugin before continuing"
+        exit
+    fi
     eval "$compose_cmd -p postal $@"
 }
 
