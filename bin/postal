@@ -16,8 +16,12 @@ run-docker-compose() {
         echo "Latest verison is $latest_version"
         set-postal-version $latest_version
     fi
-
-    eval "docker-compose -p postal $@"
+    
+    if command -v docker-compose >/dev/null 2>&1; then
+        eval "docker-compose -p postal $@"
+    else
+        eval "docker compose -p postal $@"
+    fi
 }
 
 set-postal-version() {
