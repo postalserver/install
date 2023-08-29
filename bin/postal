@@ -124,10 +124,10 @@ case "$1" in
         if [ "$2" == "" ]; then
             echo 'No version specified, using latest available version...'
             latest_version=`get-latest-postal-version`
-            set-postal-version $latest_version
         else
             latest_version="$2"
         fi
+        set-postal-version $latest_version
 
         echo "Upgrading to $latest_version"
 
