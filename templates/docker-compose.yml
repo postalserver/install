@@ -6,6 +6,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+      - /var/log/postal/web:/opt/postal/app/log
 
   smtp:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -15,6 +16,7 @@ services:
       - NET_BIND_SERVICE
     volumes:
       - /opt/postal/config:/config
+      - /var/log/postal/smtp:/opt/postal/app/log
 
   worker:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -22,6 +24,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+      - /var/log/postal/worker:/opt/postal/app/worker
 
   cron:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -29,6 +32,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+      - /var/log/postal/cron:/opt/postal/app/cron
 
   requeuer:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -36,6 +40,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+      - /var/log/postal/requeuer:/opt/postal/app/log
 
   runner:
     profiles: ["tools"]
@@ -44,4 +49,5 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+      - /var/log/postal/runner:/opt/postal/app/log
 
