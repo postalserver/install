@@ -6,6 +6,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+    restart: unless-stopped
 
   smtp:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -15,6 +16,7 @@ services:
       - NET_BIND_SERVICE
     volumes:
       - /opt/postal/config:/config
+    restart: unless-stopped
 
   worker:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -22,6 +24,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+    restart: unless-stopped
 
   cron:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -29,6 +32,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+    restart: unless-stopped
 
   requeuer:
     image: ghcr.io/postalserver/postal:{{version}}
@@ -36,6 +40,7 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
+    restart: unless-stopped
 
   runner:
     profiles: ["tools"]
@@ -44,4 +49,3 @@ services:
     network_mode: host
     volumes:
       - /opt/postal/config:/config
-
