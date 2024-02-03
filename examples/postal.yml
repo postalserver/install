@@ -48,12 +48,12 @@ dns:
   # https://github.com/atech/postal/wiki/Domains-&-DNS-Configuration for further
   # information about these.
   mx_records:
-    - mx.postal.example.com
-  smtp_server_hostname: postal.example.com
-  spf_include: spf.postal.example.com
-  return_path: rp.postal.example.com
-  route_domain: routes.postal.example.com
-  track_domain: track.postal.example.com
+    - mx.postal.yourdomain.com
+  smtp_server_hostname: postal.yourdomain.com
+  spf_include: spf.postal.yourdomain.com
+  return_path: rp.postal.yourdomain.com
+  route_domain: routes.postal.yourdomain.com
+  track_domain: track.postal.yourdomain.com
 
 smtp:
   # Specify an SMTP server that can be used to send messages from the Postal management
