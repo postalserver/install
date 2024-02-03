@@ -95,6 +95,10 @@ case "$1" in
         run-docker-compose "down"
         ;;
 
+    restart)
+        run-docker-compose "restart"
+        ;;
+
     status)
         run-docker-compose "ps"
         ;;
@@ -212,6 +216,7 @@ case "$1" in
         echo
         echo -e " * \e[35mstart\e[0m - start Postal"
         echo -e " * \e[35mstop\e[0m - stop Postal"
+        echo -e " * \e[35mrestop\e[0m - restart Postal"
         echo -e " * \e[35mstatus\e[0m - view current process status"
         echo -e " * \e[35mlogs [service]\e[0m - view logs from services"
         echo
