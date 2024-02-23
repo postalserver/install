@@ -4,10 +4,48 @@ set -e
 
 ORIGINAL_SCRIPT="$( realpath "${BASH_SOURCE[0]}" )"
 ROOT_DIR=$( cd "$( dirname "${ORIGINAL_SCRIPT}" )/.." && pwd )
+MAJOR_VERSION="2"
+DEV_MODE="false"
+
+if command -v gsed &> /dev/null
+then
+    SED="gsed"
+else
+    SED="sed"
+fi
 
 run() {
-    eval $@
+    if [ $DEV_MODE == "true" ]
+    then
+        echo "run: $@"
+    else
+        eval $@
+    fi
 }
+
+POSITIONAL_ARGS=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --v3)
+            MAJOR_VERSION="3"
+            shift 
+        ;;
+        --dev)
+            DEV_MODE="true"
+            shift
+        ;;
+        -*|--*)
+            echo "Unknown option $1"
+            exit 1
+        ;;
+        *)
+            POSITIONAL_ARGS+=("$1") 
+            shift
+        ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}"
 
 run-docker-compose() {
     if [ ! -f "docker-compose.yml" ]; then
@@ -19,9 +57,9 @@ run-docker-compose() {
 
     if command -v docker-compose &> /dev/null
     then
-        eval "docker-compose -p postal $@"
+        run "docker-compose -p postal $@"
     else
-        eval "docker compose -p postal $@"
+        run "docker compose -p postal $@"
     fi
 }
 
@@ -34,13 +72,20 @@ set-postal-version() {
     fi
 
     # Copy the new one
-    cp templates/docker-compose.yml docker-compose.yml
+    cp templates/docker-compose.v$MAJOR_VERSION.yml docker-compose.yml
 
     # Replace the version string
-    sed -i "s/{{version}}/$desired_version/" docker-compose.yml
+    $SED -i "s/{{version}}/$desired_version/" docker-compose.yml
 }
 
 get-latest-postal-version() {
+
+    if [ $MAJOR_VERSION == "3" ]
+    then
+        echo "branch-v3"
+        return
+    fi
+
     if ! command -v curl &> /dev/null
     then
         echo "curl could not be found. Install curl before continuing." > /dev/stderr
@@ -126,7 +171,7 @@ case "$1" in
         ;;
 
     upgrade)
-        run "git pull origin main"
+        run "git pull origin"
 
         # Get the latest verison of Postal which we want to upgrade
         # to if no other version is provided.
@@ -190,16 +235,16 @@ case "$1" in
 
         if [ ! -f $output_path/postal.yml ]; then
             echo "=> Creating $output_path/postal.yml"
-            cp examples/postal.yml $output_path/postal.yml
+            cp examples/postal.v$MAJOR_VERSION.yml $output_path/postal.yml
             rails_secret_key=`openssl rand -hex 128 | tr -d '\n'`
-            sed -i "s/{{secretkey}}/$rails_secret_key/" $output_path/postal.yml
-            sed -i "s/postal.yourdomain.com/$hostname/" $output_path/postal.yml
+            $SED -i "s/{{secretkey}}/$rails_secret_key/" $output_path/postal.yml
+            $SED -i "s/postal.yourdomain.com/$hostname/" $output_path/postal.yml
         fi
 
         if [ ! -f $output_path/Caddyfile ]; then
             echo "=> Creating $output_path/Caddyfile"
             cp examples/Caddyfile $output_path/Caddyfile
-            sed -i "s/postal.yourdomain.com/$hostname/" $output_path/Caddyfile
+            $SED -i "s/postal.yourdomain.com/$hostname/" $output_path/Caddyfile
         fi
 
         if [ ! -f $output_path/signing.key ]; then
