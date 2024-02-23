@@ -74,6 +74,17 @@ set-postal-version() {
     # Copy the new one
     cp templates/docker-compose.v$MAJOR_VERSION.yml docker-compose.yml
 
+    # Set the number of workers as appropriate
+    if [ -f "worker-replicas" ]
+    then
+        worker_replicas=$(cat worker-replicas | tr -d " \n")
+    else
+        worker_replicas=1
+    fi
+
+    # Replace the worker counter
+    $SED -i "s/{{worker-replicas}}/$worker_replicas/" docker-compose.yml
+
     # Replace the version string
     $SED -i "s/{{version}}/$desired_version/" docker-compose.yml
 }

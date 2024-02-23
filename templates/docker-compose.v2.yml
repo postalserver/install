@@ -25,6 +25,8 @@ services:
     volumes:
       - /opt/postal/config:/config
     restart: unless-stopped
+    deploy:
+      replicas: {{worker-replicas}}
 
   cron:
     image: ghcr.io/postalserver/postal:{{version}}
