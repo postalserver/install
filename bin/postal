@@ -47,6 +47,14 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}"
 
+call-hook() {
+    if [ -f "hooks/$1" ]
+    then
+        echo "running hook: $1"
+        bash hooks/$1
+    fi
+}
+
 run-docker-compose() {
     if [ ! -f "docker-compose.yml" ]; then
         echo 'No docker-compose file available. Generating using latest available version...'
@@ -87,6 +95,8 @@ set-postal-version() {
 
     # Replace the version string
     $SED -i "s/{{version}}/$desired_version/" docker-compose.yml
+
+    call-hook "set-postal-version"
 }
 
 get-latest-postal-version() {
@@ -144,15 +154,21 @@ case "$1" in
         ;;
 
     start)
+        call-hook "pre-start"
         run-docker-compose "up -d ${@:2}"
+        call-hook "post-start"
         ;;
 
     stop)
+        call-hook "pre-stop"
         run-docker-compose "down"
+        call-hook "post-stop"
         ;;
 
     restart)
+        call-hook "pre-restart"
         run-docker-compose "restart"
+        call-hook "post-restart"
         ;;
 
     status)
@@ -177,12 +193,17 @@ case "$1" in
         ;;
 
     initialize)
+        call-hook "pre-initialize-pull"
         run-docker-compose "pull"
+        call-hook "pre-initialize"
         run-docker-compose "run --rm runner postal initialize"
+        call-hook "post-initialize"
         ;;
 
     upgrade)
+        call-hook "pre-upgrade-pull"
         run "git pull origin"
+        call-hook "post-upgrade-pull"
 
         # Get the latest verison of Postal which we want to upgrade
         # to if no other version is provided.
@@ -196,13 +217,19 @@ case "$1" in
 
         echo "Upgrading to $latest_version"
 
+        call-hook "pre-upgrade-pull"
         run-docker-compose "pull"
+        call-hook "pre-upgrade-db"
         run-docker-compose "run --rm runner postal upgrade"
+        call-hook "post-upgrade-db"
         run-docker-compose "up -d"
+        call-hook "post-upgrade"
         ;;
 
     upgrade-db)
+        call-hook "pre-upgrade-db"
         run-docker-compose "run --rm runner postal upgrade"
+        call-hook "post-upgrade-db"
         ;;
 
     console)
@@ -224,6 +251,8 @@ case "$1" in
     bootstrap)
         hostname=$2
         output_path=$3
+
+        call-hook "pre-bootstrap"
 
         if [ "$output_path" == "" ]; then
             output_path=/opt/postal/config
@@ -263,6 +292,8 @@ case "$1" in
             openssl genrsa -out $output_path/signing.key 1024
             chmod 644 $output_path/signing.key
         fi
+
+        call-hook "post-bootstrap"
 
         ;;
     *)
