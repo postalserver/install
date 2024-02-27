@@ -6,6 +6,7 @@ ORIGINAL_SCRIPT="$( realpath "${BASH_SOURCE[0]}" )"
 ROOT_DIR=$( cd "$( dirname "${ORIGINAL_SCRIPT}" )/.." && pwd )
 MAJOR_VERSION="2"
 DEV_MODE="false"
+GIT_PULL="true"
 
 if command -v gsed &> /dev/null
 then
@@ -23,6 +24,7 @@ run() {
     fi
 }
 
+ORIGINAL_ARGS="${@:2}"
 POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -32,6 +34,10 @@ while [[ $# -gt 0 ]]; do
         ;;
         --dev)
             DEV_MODE="true"
+            shift
+        ;;
+        --no-git-pull)
+            GIT_PULL="false"
             shift
         ;;
         -*|--*)
@@ -201,9 +207,17 @@ case "$1" in
         ;;
 
     upgrade)
-        call-hook "pre-upgrade-pull"
-        run "git pull origin"
-        call-hook "post-upgrade-pull"
+        if [ $GIT_PULL == "true" ]
+        then
+            call-hook "pre-upgrade-pull"
+            echo 'Pull latest installation helper repository from GitHub...'
+            run "git pull origin"
+            call-hook "post-upgrade-pull"
+
+            echo 'Re-executing upgrade script from pulled repository'
+            eval "$0" "upgrade" "${ORIGINAL_ARGS}" --no-git-pull
+            exit $?
+        fi
 
         # Get the latest verison of Postal which we want to upgrade
         # to if no other version is provided.
