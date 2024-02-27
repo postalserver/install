@@ -1,32 +1,17 @@
-general:
-  # This can be changed to allow messages to be sent from multiple IP addresses
-  use_ip_pools: false
+version: 2
 
-web:
-  # The host that the management interface will be available on
-  host: postal.yourdomain.com
-  # The protocol that requests to the management interface should happen on
-  protocol: https
-
-web_server:
-  # Specify configuration for the Postal web server
-  bind_address: 127.0.0.1
-  port: 5000
-
-smtp_server:
-  # Specify configuration to the Postal SMTP server
-  port: 25
+postal:
+  web_hostname: postal.yourdomain.com
+  web_protocol: https
+  smtp_hostname: postal.yourdomain.com
 
 main_db:
-  # Specify the connection details for your MySQL database
   host: 127.0.0.1
   username: root
   password: postal
   database: postal
 
 message_db:
-  # Specify the connection details for your MySQL server that will house the
-  # message databases for mail servers.
   host: 127.0.0.1
   username: root
   password: postal
