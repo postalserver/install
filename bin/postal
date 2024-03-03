@@ -4,7 +4,6 @@ set -e
 
 ORIGINAL_SCRIPT="$( realpath "${BASH_SOURCE[0]}" )"
 ROOT_DIR=$( cd "$( dirname "${ORIGINAL_SCRIPT}" )/.." && pwd )
-MAJOR_VERSION="2"
 DEV_MODE="false"
 GIT_PULL="true"
 
@@ -28,10 +27,6 @@ ORIGINAL_ARGS="${@:2}"
 POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --v3)
-            MAJOR_VERSION="3"
-            shift 
-        ;;
         --dev)
             DEV_MODE="true"
             shift
@@ -81,6 +76,16 @@ set-postal-version() {
         cp docker-compose.yml docker-compose.backup.yml
     fi
 
+    # Determine which version we're using. If it starts with v2
+    # then we're using version 2. If it starts with v3 then we're
+    # using version 3.
+    if [[ $desired_version == 2* ]]; then
+        MAJOR_VERSION=2
+    elif [[ $desired_version == 3* ]]; then
+        MAJOR_VERSION=3
+    elif [[ $desired_version == "branch-v3" ]]; then
+        MAJOR_VERSION=3
+    else
         echo "Invalid version string. Must start with 2 or 3."
         exit 1
     fi
@@ -106,11 +111,6 @@ set-postal-version() {
 }
 
 get-latest-postal-version() {
-
-    if [ $MAJOR_VERSION == "3" ]
-    then
-        return
-    fi
 
     if ! command -v curl &> /dev/null
     then
@@ -223,11 +223,11 @@ case "$1" in
         if [ "$2" == "" ]; then
             echo 'No version specified, using latest available version...'
             latest_version=`get-latest-postal-version`
-            set-postal-version $latest_version
         else
             latest_version="$2"
         fi
 
+        set-postal-version $latest_version
         echo "Upgrading to $latest_version"
 
         call-hook "pre-upgrade-pull"
