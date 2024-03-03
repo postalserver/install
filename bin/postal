@@ -6,6 +6,7 @@ ORIGINAL_SCRIPT="$( realpath "${BASH_SOURCE[0]}" )"
 ROOT_DIR=$( cd "$( dirname "${ORIGINAL_SCRIPT}" )/.." && pwd )
 DEV_MODE="false"
 GIT_PULL="true"
+FORCE_VERSION=""
 
 if command -v gsed &> /dev/null
 then
@@ -29,6 +30,11 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         --dev)
             DEV_MODE="true"
+            shift
+        ;;
+        --version)
+            FORCE_VERSION=$2
+            shift
             shift
         ;;
         --no-git-pull)
@@ -81,13 +87,8 @@ set-postal-version() {
     # using version 3.
     if [[ $desired_version == 2* ]]; then
         MAJOR_VERSION=2
-    elif [[ $desired_version == 3* ]]; then
-        MAJOR_VERSION=3
-    elif [[ $desired_version == "branch-v3" ]]; then
-        MAJOR_VERSION=3
     else
-        echo "Invalid version string. Must start with 2 or 3."
-        exit 1
+        MAJOR_VERSION=3
     fi
 
     # Copy the new one
@@ -221,8 +222,13 @@ case "$1" in
         # Get the latest verison of Postal which we want to upgrade
         # to if no other version is provided.
         if [ "$2" == "" ]; then
-            echo 'No version specified, using latest available version...'
-            latest_version=`get-latest-postal-version`
+            if [ ! $FORCE_VERSION == "" ]; then
+                latest_version="$FORCE_VERSION"
+                echo "Using version: $latest_version"
+            else
+                echo 'No version specified, using latest available version...'
+                latest_version=`get-latest-postal-version`
+            fi
         else
             latest_version="$2"
         fi
@@ -280,17 +286,20 @@ case "$1" in
 
         # Get the latest verison of Postal as the starting version for a
         # new installation.
-        latest_version=`get-latest-postal-version`
-        echo "Latest version is: $latest_version"
+        if [ ! $FORCE_VERSION == "" ]; then
+            latest_version="$FORCE_VERSION"
+            echo "Using version: $latest_version"
+        else
+            latest_version=`get-latest-postal-version`
+            echo "Latest version is: $latest_version"
+        fi
+
         set-postal-version $latest_version
 
         if [[ $latest_version == 2* ]]; then
             MAJOR_VERSION=2
-        elif [[ $latest_version == 3* ]]; then
-            MAJOR_VERSION=3
         else
-            echo "Invalid version string. Must start with 2 or 3."
-            exit 1
+            MAJOR_VERSION=3
         fi
 
         mkdir -p $output_path
