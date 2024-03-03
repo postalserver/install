@@ -284,6 +284,15 @@ case "$1" in
         echo "Latest version is: $latest_version"
         set-postal-version $latest_version
 
+        if [[ $latest_version == 2* ]]; then
+            MAJOR_VERSION=2
+        elif [[ $latest_version == 3* ]]; then
+            MAJOR_VERSION=3
+        else
+            echo "Invalid version string. Must start with 2 or 3."
+            exit 1
+        fi
+
         mkdir -p $output_path
 
         if [ ! -f $output_path/postal.yml ]; then
