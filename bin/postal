@@ -40,10 +40,6 @@ while [[ $# -gt 0 ]]; do
             GIT_PULL="false"
             shift
         ;;
-        -*|--*)
-            echo "Unknown option $1"
-            exit 1
-        ;;
         *)
             POSITIONAL_ARGS+=("$1") 
             shift
@@ -85,6 +81,10 @@ set-postal-version() {
         cp docker-compose.yml docker-compose.backup.yml
     fi
 
+        echo "Invalid version string. Must start with 2 or 3."
+        exit 1
+    fi
+
     # Copy the new one
     cp templates/docker-compose.v$MAJOR_VERSION.yml docker-compose.yml
 
@@ -109,7 +109,6 @@ get-latest-postal-version() {
 
     if [ $MAJOR_VERSION == "3" ]
     then
-        echo "branch-v3"
         return
     fi
 
