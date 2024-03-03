@@ -241,7 +241,7 @@ case "$1" in
         call-hook "pre-upgrade-db"
         run-docker-compose "run --rm runner postal upgrade"
         call-hook "post-upgrade-db"
-        run-docker-compose "up -d"
+        run-docker-compose "up -d --remove-orphans"
         call-hook "post-upgrade"
         ;;
 
