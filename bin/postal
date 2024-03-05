@@ -264,7 +264,7 @@ case "$1" in
         ;;
 
     test-app-smtp)
-        run-docker-compose "run --rm runner postal test-app-smtp"
+        run-docker-compose "run --rm runner postal test-app-smtp $2"
         ;;
 
     bootstrap)
