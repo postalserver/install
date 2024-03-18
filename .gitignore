@@ -1,4 +1,6 @@
 config/**/*
 /docker-compose.*
 worker-replicas
+docker-project-name
+config-dir-path
 hooks/**/*
