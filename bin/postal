@@ -255,6 +255,10 @@ case "$1" in
         run-docker-compose "run --rm runner postal console"
         ;;
 
+    version)
+        run-docker-compose "run --rm runner postal version"
+        ;;
+
     make-user)
         run-docker-compose "run --rm runner postal make-user"
         ;;
