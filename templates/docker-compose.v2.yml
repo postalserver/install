@@ -5,7 +5,7 @@ services:
     command: postal web-server
     network_mode: host
     volumes:
-      - /opt/postal/config:/config
+      - "{{config-dir}}:/config"
     restart: unless-stopped
 
   smtp:
@@ -15,7 +15,7 @@ services:
     cap_add:
       - NET_BIND_SERVICE
     volumes:
-      - /opt/postal/config:/config
+      - "{{config-dir}}:/config"
     restart: unless-stopped
 
   worker:
@@ -23,7 +23,7 @@ services:
     command: postal worker
     network_mode: host
     volumes:
-      - /opt/postal/config:/config
+      - "{{config-dir}}:/config"
     restart: unless-stopped
 
   cron:
@@ -31,7 +31,7 @@ services:
     command: postal cron
     network_mode: host
     volumes:
-      - /opt/postal/config:/config
+      - "{{config-dir}}:/config"
     restart: unless-stopped
 
   requeuer:
@@ -39,7 +39,7 @@ services:
     command: postal requeuer
     network_mode: host
     volumes:
-      - /opt/postal/config:/config
+      - "{{config-dir}}:/config"
     restart: unless-stopped
 
   runner:
@@ -48,4 +48,4 @@ services:
     command: postal
     network_mode: host
     volumes:
-      - /opt/postal/config:/config
+      - "{{config-dir}}:/config"

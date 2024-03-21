@@ -7,6 +7,8 @@ ROOT_DIR=$( cd "$( dirname "${ORIGINAL_SCRIPT}" )/.." && pwd )
 DEV_MODE="false"
 GIT_PULL="true"
 FORCE_VERSION=""
+DEFAULT_DOCKER_PROJECT_NAME="postal"
+DEFAULT_CONFIG_DIR_PATH="/opt/postal/config"
 
 if command -v gsed &> /dev/null
 then
@@ -66,11 +68,13 @@ run-docker-compose() {
         set-postal-version $latest_version
     fi
 
+    local docker_project_name=`get-docker-project-name`
+
     if command -v docker-compose &> /dev/null
     then
-        run "docker-compose -p postal $@"
+        run "docker-compose -p $docker_project_name $@"
     else
-        run "docker compose -p postal $@"
+        run "docker compose -p $docker_project_name $@"
     fi
 }
 
@@ -102,6 +106,11 @@ set-postal-version() {
         worker_replicas=1
     fi
 
+    # Replace the config directory path
+    local config_dir_path=$(get-config-dir-path)
+    local escaped_config_dir_path=$(escape-sed-chars "$config_dir_path")
+    $SED -i "s/{{config-dir}}/$escaped_config_dir_path/" docker-compose.yml
+
     # Replace the worker counter
     $SED -i "s/{{worker-replicas}}/$worker_replicas/" docker-compose.yml
 
@@ -109,6 +118,34 @@ set-postal-version() {
     $SED -i "s/{{version}}/$desired_version/" docker-compose.yml
 
     call-hook "set-postal-version"
+}
+
+escape-sed-chars() {
+    local input="$1"
+
+    echo "$input" | $SED -e 's/[]\/$*.^|[]/\\&/g'
+}
+
+get-docker-project-name() {
+    if [ -f "docker-project-name" ]
+    then
+        local docker_project_name=$(cat docker-project-name | tr -d " \n")
+    else
+        local docker_project_name=$DEFAULT_DOCKER_PROJECT_NAME
+    fi
+
+    echo $docker_project_name
+}
+
+get-config-dir-path() {
+    if [ -f "config-dir-path" ]
+    then
+        local config_dir=$(cat config-dir-path | tr -d " \n")
+    else
+        local config_dir=$DEFAULT_CONFIG_DIR_PATH
+    fi
+
+    echo $config_dir
 }
 
 get-latest-postal-version() {
@@ -277,15 +314,20 @@ case "$1" in
 
         call-hook "pre-bootstrap"
 
-        if [ "$output_path" == "" ]; then
-            output_path=/opt/postal/config
-        fi
-
         if [ "$hostname" == "" ]; then
             echo 'hostname is missing.'
             echo
             echo 'usage: ./bin/postal postal.mydomain.com [path/to/config]'
             exit 1
+        fi
+
+        if [ "$output_path" == "" ]; then
+            output_path=$DEFAULT_CONFIG_DIR_PATH
+        fi
+
+        # Write the output path if it's not the default
+        if [ ! $output_path == $DEFAULT_CONFIG_DIR_PATH ]; then
+            echo $output_path > config-dir-path
         fi
 
         # Get the latest verison of Postal as the starting version for a
