@@ -62,7 +62,7 @@ run-docker-compose() {
     if [ ! -f "docker-compose.yml" ]; then
         echo 'No docker-compose file available. Generating using latest available version...'
         latest_version=`get-latest-postal-version`
-        echo "Latest verison is $latest_version"
+        echo "Latest version is $latest_version"
         set-postal-version $latest_version
     fi
 
@@ -219,7 +219,7 @@ case "$1" in
             exit $?
         fi
 
-        # Get the latest verison of Postal which we want to upgrade
+        # Get the latest version of Postal which we want to upgrade
         # to if no other version is provided.
         if [ "$2" == "" ]; then
             if [ ! $FORCE_VERSION == "" ]; then
@@ -288,7 +288,7 @@ case "$1" in
             exit 1
         fi
 
-        # Get the latest verison of Postal as the starting version for a
+        # Get the latest version of Postal as the starting version for a
         # new installation.
         if [ ! $FORCE_VERSION == "" ]; then
             latest_version="$FORCE_VERSION"
