@@ -1,0 +1,7 @@
+[codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = .git,.gitignore,.gitattributes,.codespellrc
+check-hidden = true
+# Do not "fix" URLs even if they contain typos
+ignore-regex = https?://\S+
+# ignore-words-list =
