@@ -313,13 +313,20 @@ case "$1" in
             cp examples/postal.v$MAJOR_VERSION.yml $output_path/postal.yml
             rails_secret_key=`openssl rand -hex 128 | tr -d '\n'`
             $SED -i "s/{{secretkey}}/$rails_secret_key/" $output_path/postal.yml
-            $SED -i "s/postal.yourdomain.com/$hostname/" $output_path/postal.yml
+            # Replace the example hostname placeholders. The dots are escaped so the
+            # pattern cannot consume the '@' in smtp.from_address, and the second
+            # expression gives smtp.from_address a domain so it remains a valid
+            # mailbox (login@domain) rather than a bare hostname.
+            $SED -i \
+                -e "s/postal\.yourdomain\.com/$hostname/g" \
+                -e "s/@yourdomain\.com/@$hostname/g" \
+                $output_path/postal.yml
         fi
 
         if [ ! -f $output_path/Caddyfile ]; then
             echo "=> Creating $output_path/Caddyfile"
             cp examples/Caddyfile $output_path/Caddyfile
-            $SED -i "s/postal.yourdomain.com/$hostname/" $output_path/Caddyfile
+            $SED -i "s/postal\.yourdomain\.com/$hostname/g" $output_path/Caddyfile
         fi
 
         if [ ! -f $output_path/signing.key ]; then
