@@ -207,12 +207,12 @@ smtp:
   # The e-mail to use as the from address outgoing emails from Postal
   from_address: postal@yourdomain.com
 
-# rails:
-#   # The Rails environment to run the application in
-#   environment: production
-#   # This is generated automatically by the config initialization. It should be a random
-#   # string unique to your installation.
-#   secret_key: {{secretkey}}
+rails:
+  # The Rails environment to run the application in
+  environment: production
+  # This is generated automatically by the config initialization. It should be a random
+  # string unique to your installation.
+  secret_key: {{secretkey}}
 
 # rspamd:
 #   # Enable rspamd for message inspection
