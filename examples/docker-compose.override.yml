@@ -1,0 +1,32 @@
+# Example Docker Compose override for Postal.
+#
+# Copy this file into the installation directory so that Compose merges it with
+# the generated docker-compose.yml automatically:
+#
+#     cp examples/docker-compose.override.yml /opt/postal/install/docker-compose.override.yml
+#
+# The installer generates a file named "docker-compose.yml", so the override must
+# be named "docker-compose.override.yml". (A file named "compose.override.yaml" is
+# only picked up automatically when the base file is named "compose.yaml".)
+#
+# This example mounts a certificate and private key that live outside the config
+# directory - for example one issued by acme.sh - into the SMTP server container.
+# Adjust the paths on the left-hand side to match your system, then run
+# 'postal restart'.
+#
+# The matching configuration in postal.yml is:
+#
+#     smtp_server:
+#       tls_enabled: true
+#       tls_certificate_path: /config/smtp.cert
+#       tls_private_key_path: /config/smtp.key
+#
+# If your certificate and key already live in /opt/postal/config (which is mounted
+# at /config inside every container) you do not need this file at all - just set
+# tls_enabled to true in postal.yml.
+#
+services:
+  smtp:
+    volumes:
+      - /path/to/certificate.crt:/config/smtp.cert:ro
+      - /path/to/certificate.key:/config/smtp.key:ro

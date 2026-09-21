@@ -24,6 +24,10 @@ logging:
 main_db:
   # Specify the connection details for your MySQL database
   host: 127.0.0.1
+  # The port that MariaDB is listening on. This is the host port published by the
+  # MariaDB container. Change it to 3307 (or any other free port) if another
+  # MySQL/MariaDB service already occupies 3306 on this host.
+  port: 3306
   username: root
   password: postal
   database: postal
@@ -32,6 +36,10 @@ message_db:
   # Specify the connection details for your MySQL server that will house the
   # message databases for mail servers.
   host: 127.0.0.1
+  # The port that MariaDB is listening on. This is the host port published by the
+  # MariaDB container. Change it to 3307 (or any other free port) if another
+  # MySQL/MariaDB service already occupies 3306 on this host.
+  port: 3306
   username: root
   password: postal
   prefix: postal
